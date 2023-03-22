@@ -51,7 +51,7 @@ func NewSizerLimited(maxWorkersCount int) DirSizer {
 	return &sizer{maxWorkersCount: maxWorkersCount, timeout: time.Millisecond}
 }
 
-func (a *sizer) SetMaxWorkersCount(maxWorkersCount int) {
+func (a *sizer) SetWorkersLimit(maxWorkersCount int) {
 	a.maxWorkersCount = maxWorkersCount
 }
 
@@ -87,13 +87,13 @@ func (a *sizer) traverseFiles(ctx context.Context, files []File, ch chan Result)
 // handleDir gets directories and files list and calls traverseDirs and traverseFiles
 func (a *sizer) handleDir(ctx context.Context, d Dir, s SemaphoreInterface, ch chan Result) {
 	defer a.wg.Done()
-	dirList, fileList, err := d.Ls(ctx)
+	dirs, files, err := d.Ls(ctx)
 	if err != nil {
 		ch <- Result{Err: err}
 		return
 	}
-	a.traverseDirs(ctx, dirList, s, ch)
-	a.traverseFiles(ctx, fileList, ch)
+	a.traverseDirs(ctx, dirs, s, ch)
+	a.traverseFiles(ctx, files, ch)
 
 	// worker finished the task
 	if err := s.Release(); err != nil {
@@ -103,7 +103,7 @@ func (a *sizer) handleDir(ctx context.Context, d Dir, s SemaphoreInterface, ch c
 
 func (a *sizer) Size(ctx context.Context, d Dir) (res Result, err error) {
 	// setting up semaphore and channel
-	a.SetMaxWorkersCount(4)
+	a.SetWorkersLimit(4)
 	s := NewSemaphore(a.maxWorkersCount, a.timeout)
 	statChan := make(chan Result)
 

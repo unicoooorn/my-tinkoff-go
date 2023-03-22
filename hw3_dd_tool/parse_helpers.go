@@ -12,7 +12,7 @@ type BadOffsetError struct {
 }
 
 func (e *BadOffsetError) Error() string {
-	return "Offset " + strconv.FormatInt(e.Offset, 10) + " is out of file bounds " + strconv.FormatInt(e.filesize, 10)
+	return "Off " + strconv.FormatInt(e.Offset, 10) + " is out of file bounds " + strconv.FormatInt(e.filesize, 10)
 }
 
 type convFlag struct {

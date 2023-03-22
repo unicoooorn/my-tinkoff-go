@@ -33,7 +33,7 @@ func TestHappyPath(t *testing.T) {
 	assert.Len(t, top, 1, "TopN(1) returned %d elements", len(top))
 
 	if assert.Equal(t, "multiple-occurrence", top[0].Tag) {
-		assert.Equal(t, 2, top[0].OccurrenceCount)
+		assert.Equal(t, 2, top[0].Counter)
 	}
 }
 
@@ -54,7 +54,7 @@ func TestTopN(t *testing.T) {
 			value := size - i - 1
 			tagName := fmt.Sprintf("%d", value)
 			assert.Equal(t, tagName, el.Tag, "TopN(%d) returned elements in wrong order (bad tag name at %d): %v", n, i, topN)
-			assert.Equal(t, value, el.OccurrenceCount, "TopN(%d) returned elements in wrong order (bad occurrence count at %d): %v", n, i, topN)
+			assert.Equal(t, value, el.Counter, "TopN(%d) returned elements in wrong order (bad occurrence count at %d): %v", n, i, topN)
 		}
 	}
 
@@ -76,7 +76,7 @@ func TestTopNWithRepeatedOccurrence(t *testing.T) {
 
 	distinctMap := make(map[string]struct{})
 	for _, v := range topN {
-		assert.Equal(t, 1, v.OccurrenceCount)
+		assert.Equal(t, 1, v.Counter)
 		distinctMap[v.Tag] = struct{}{}
 	}
 
